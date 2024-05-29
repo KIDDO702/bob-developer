@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\api\CategoryController;
 use App\Http\Controllers\Auth\AuthSessionController;
 use App\Http\Controllers\Auth\RegisterUserController;
 use Illuminate\Http\Request;
@@ -14,6 +15,10 @@ Route::post('register', [RegisterUserController::class, 'store']);
 Route::post('authenticate', [AuthSessionController::class, 'authenticate']);
 Route::post('logout', [AuthSessionController::class, 'logout'])->middleware('auth:sanctum');
 
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/categories', [CategoryController::class, 'index']);
+    Route::post('/category/create', [CategoryController::class, 'store']);
+});
 
 
 

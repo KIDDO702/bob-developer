@@ -16,30 +16,44 @@ class AuthSessionController extends Controller
             'password' => 'required|string',
         ]);
 
+        $remember = $request->filled('remember');
+
         $user = User::where('email', $credentials['email'])->first();
 
         if (!Auth::attempt($credentials)) {
-
-            return response()->json([
-                'message' => 'Invalid Credentials'
-            ], 401);
+            return response()->json(['message' => 'Invalid Credentials'], 401);
         }
 
-        $token = $user->createToken('user-token')->plainTextToken;
+        // Check if the authenticated user has the "admin" role
+        if (!auth()->user()->hasRole('admin')) {
+            Auth::logout(); // Logout user if not admin
+            return response()->json(['message' => 'Only admins are allowed to access the dashboard'], 403);
+        }
+
+        // Create token with conditional expiration
+        $tokenResult = $user->createToken('user-token');
+
+        // Include logic for "remember me" to customize token or session handling
+        $sessionExpiry = $remember ? '1 week' : 'default';
+
 
         return response()->json([
             'message' => 'Logged In successfully',
             'user' => $user,
-            'token' => $token
+            'token' => $tokenResult->plainTextToken,
+            'expires_in' => $sessionExpiry
         ], 200);
     }
 
-    public function logout()
-    {
-        auth()->user()->tokens()->delete();
 
-        return [
-            'message' => 'logged out successfully :)'
-        ];
+    public function logout(Request $request)
+    {
+        $token = $request->user()->currentAccessToken();
+
+        $token->delete();
+
+        return response()->json([
+            'message' => 'Logged out successfully from this device'
+        ], 200);
     }
 }
