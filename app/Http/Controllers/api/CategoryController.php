@@ -47,7 +47,18 @@ class CategoryController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $category = Category::find($id);
+
+        if (!$category) {
+
+            return response()->json([
+                'error' => 'Category not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'category' => $category,
+        ]);
     }
 
     /**
