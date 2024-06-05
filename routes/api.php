@@ -20,6 +20,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/categories', [CategoryController::class, 'index']);
     Route::post('/category/create', [CategoryController::class, 'store']);
     Route::get('/category/{id}', [CategoryController::class, 'show']);
+    Route::put('/category/u/{id}', [CategoryController::class, 'update']);
 });
 
 

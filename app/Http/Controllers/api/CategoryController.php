@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Models\Category;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 
 class CategoryController extends Controller
@@ -66,7 +67,26 @@ class CategoryController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $category = Category::find($id);
+
+        if (!$category) {
+            return response()->json([
+                'error' => 'Category not found'
+            ], 404);
+        }
+
+        $validated = $request->validate([
+            'name' => [ 'required', 'string', Rule::unique('categories')->ignore($category->id) ]
+        ]);
+
+        $category->name = $validated['name'];
+        $category->slug = Str::slug($validated['name']);
+
+        $category->update();
+
+        return response()->json([
+            'success' => $category->name . 'Edited Successfully',
+        ], 200);
     }
 
     /**
