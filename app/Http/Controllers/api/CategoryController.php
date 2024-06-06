@@ -85,7 +85,7 @@ class CategoryController extends Controller
         $category->update();
 
         return response()->json([
-            'success' => $category->name . 'Edited Successfully',
+            'info' => $category->name . 'Edited Successfully',
         ], 200);
     }
 
