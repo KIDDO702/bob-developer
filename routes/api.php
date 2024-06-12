@@ -17,11 +17,14 @@ Route::post('authenticate', [AuthSessionController::class, 'authenticate']);
 Route::post('logout', [AuthSessionController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::get('/categories', [CategoryController::class, 'index']);
-    Route::post('/category/create', [CategoryController::class, 'store']);
-    Route::get('/category/{id}', [CategoryController::class, 'show']);
-    Route::put('/category/u/{id}', [CategoryController::class, 'update']);
-    Route::delete('category/d/{id}', [CategoryController::class, 'destroy']);
+
+    Route::controller(CategoryController::class)->group( function () {
+        Route::get('/categories', 'index');
+        Route::post('/category/create', 'store');
+        Route::get('/category/{id}', 'show');
+        Route::put('/category/u/{id}', 'update');
+        Route::delete('category/d/{id}', 'destroy');
+    });
 });
 
 
